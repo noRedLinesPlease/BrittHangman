@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">BrittHangman</string>
+    <string name="header">Welcome to Britt Hangman!</string>
+    <string name="instructions">Guess a letter to play</string>
+    <string name="you_lost">You lost. Click button below to play again</string>
+    <string name="you_won">YOU WON! Click the button below to play again!</string>
+    <string name="letters_guessed_header">Letters Guessed</string>
+    <string name="new_game">NEW GAME</string>
+    <string name="submit_guess">Submit Guess</string>
+</resources>

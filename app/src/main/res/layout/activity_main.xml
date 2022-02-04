@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/header"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="20sp"
+        android:textColor="@color/teal_200"/>
+
+    <TextView
+        android:id="@+id/instructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/instructions"
+        app:layout_constraintEnd_toEndOf="@id/header"
+        app:layout_constraintStart_toStartOf="@id/header"
+        app:layout_constraintTop_toBottomOf="@id/header" />
+
+    <View
+        android:id="@+id/vertical_line"
+        android:layout_width="5dp"
+        android:layout_height="260dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="60dp"
+        android:background="@color/teal_200"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/instructions" />
+
+    <TableRow
+        android:id="@+id/top_hang"
+        android:layout_width="100dp"
+        android:layout_height="5dp"
+        android:background="@color/teal_200"
+        app:layout_constraintTop_toTopOf="@id/vertical_line"
+        app:layout_constraintStart_toStartOf="@id/vertical_line"/>
+
+    <TableRow
+        android:id="@+id/bottom_base"
+        android:layout_width="100dp"
+        android:layout_height="5dp"
+        android:layout_marginStart="5dp"
+        android:background="@color/teal_200"
+        app:layout_constraintBottom_toBottomOf="@id/vertical_line"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vertical_line" />
+
+    <View
+        android:id="@+id/noose"
+        android:layout_width="5dp"
+        android:layout_height="30dp"
+        android:background="@color/teal_200"
+        app:layout_constraintStart_toEndOf="@id/top_hang"
+        app:layout_constraintTop_toTopOf="@id/top_hang"
+        app:layout_constraintEnd_toEndOf="@id/top_hang"/>
+
+    <ImageView
+        android:id="@+id/head_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/head"
+        app:layout_constraintStart_toEndOf="@id/noose"
+        app:layout_constraintTop_toBottomOf="@id/noose"
+        app:layout_constraintEnd_toEndOf="@id/noose"/>
+
+    <View
+        android:id="@+id/body_view"
+        android:layout_width="5dp"
+        android:layout_height="80dp"
+        android:background="@color/teal_200"
+        app:layout_constraintStart_toStartOf="@id/head_view"
+        app:layout_constraintTop_toBottomOf="@id/head_view"
+        android:layout_marginStart="22dp"/>
+
+    <TableRow
+        android:id="@+id/left_arm"
+        android:layout_width="50dp"
+        android:layout_height="5dp"
+        android:layout_marginTop="18dp"
+        android:background="@color/teal_200"
+        app:layout_constraintEnd_toStartOf="@id/body_view"
+        app:layout_constraintTop_toTopOf="@id/body_view" />
+
+
+    <TableRow
+        android:id="@+id/right_arm"
+        android:layout_width="50dp"
+        android:layout_height="5dp"
+        android:background="@color/teal_200"
+        app:layout_constraintBottom_toBottomOf="@+id/left_arm"
+        app:layout_constraintStart_toEndOf="@+id/left_arm"
+        app:layout_constraintTop_toBottomOf="@id/head_view"
+        android:layout_marginTop="18dp"/>
+
+    <TableRow
+        android:id="@+id/right_leg_1"
+        android:layout_width="30dp"
+        android:layout_height="5dp"
+        android:src="@drawable/legs"
+        android:background="@color/teal_200"
+        app:layout_constraintStart_toEndOf="@id/body_view"
+        app:layout_constraintTop_toBottomOf="@id/body_view"/>
+
+    <TableRow
+        android:id="@+id/left_leg_1"
+        android:layout_width="30dp"
+        android:layout_height="5dp"
+        android:src="@drawable/legs"
+        android:background="@color/teal_200"
+        app:layout_constraintEnd_toEndOf="@id/body_view"
+        app:layout_constraintTop_toBottomOf="@id/body_view"/>
+
+    <TextView
+        android:id="@+id/letters_guessed_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="44dp"
+        android:text="@string/letters_guessed_header"
+        android:textColor="@color/teal_200"
+        app:layout_constraintStart_toEndOf="@+id/instructions"
+        app:layout_constraintTop_toBottomOf="@id/instructions" />
+
+    <TextView
+        android:id="@+id/letters_guessed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/teal_200"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/instructions"
+        app:layout_constraintTop_toBottomOf="@id/letters_guessed_header" />
+
+    <TextView
+        android:id="@+id/letters_guessed_line_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/teal_200"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@id/letters_guessed"
+        app:layout_constraintStart_toEndOf="@id/instructions"
+        android:layout_marginTop="10dp"/>
+
+    <EditText
+        android:id="@+id/letter_input"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:shadowColor="@color/teal_200"
+        android:textColor="@color/teal_200"
+        app:layout_constraintBottom_toTopOf="@+id/guessButton"
+        app:layout_constraintEnd_toEndOf="@+id/guessButton"
+        app:layout_constraintStart_toStartOf="@+id/guessButton" />
+
+    <Button
+        android:id="@+id/guessButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="29dp"
+        android:background="@color/teal_200"
+        android:text="@string/submit_guess"
+        app:layout_constraintBottom_toTopOf="@+id/results_view"
+        app:layout_constraintEnd_toEndOf="@+id/letters_guessed_header"
+        app:layout_constraintStart_toStartOf="@+id/letters_guessed"
+        app:layout_constraintTop_toBottomOf="@+id/letters_guessed" />
+
+    <View
+        android:id="@+id/right_leg_2"
+        android:layout_width="5dp"
+        android:layout_height="60dp"
+        android:background="@color/teal_200"
+        app:layout_constraintEnd_toEndOf="@+id/right_leg_1"
+        app:layout_constraintStart_toEndOf="@id/right_leg_1"
+        app:layout_constraintTop_toTopOf="@id/right_leg_1" />
+
+    <View
+        android:id="@+id/left_leg_2"
+        android:layout_width="5dp"
+        android:layout_height="60dp"
+        android:background="@color/teal_200"
+        app:layout_constraintStart_toStartOf="@id/left_leg_1"
+        app:layout_constraintTop_toTopOf="@id/left_leg_1" />
+
+    <TextView
+        android:id="@+id/word_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/bottom_base"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/teal_200"
+        android:textSize="30sp"/>
+
+    <TextView
+        android:id="@+id/results_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/word_TV"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="YOU WON"
+        android:textStyle="bold"
+        android:textColor="@color/teal_200"
+        android:layout_marginTop="10dp"/>
+
+    <Button
+        android:id="@+id/new_game_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_game"
+        app:layout_constraintTop_toBottomOf="@id/results_view"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="15dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
