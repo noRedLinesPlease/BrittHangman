@@ -1,34 +1,22 @@
 package com.example.bunny.britthangman
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.isDigitsOnly
 import androidx.databinding.DataBindingUtil
 import com.example.bunny.britthangman.databinding.ActivityMainBinding
-import kotlin.random.Random
-import kotlin.reflect.typeOf
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val listofGuessedLetters = mutableListOf<String>()
-    private val lineTwoGuessedLetters = mutableListOf<String>()
     private var theLetter: String = ""
-    private val randomNumberList = mutableListOf<Int>()
-    private val underscores = mutableListOf<String>()
     private val listOfParts = mutableListOf<View>()
-    private var numOfGuesses = 0
+    private val viewModel by viewModels<GameViewModel>()
     private var bodyPartIndex = 0
-    private lateinit var theWord: String
-    private val listOfWords = listOf(
-        "frozen", "wash your hair", "willowtree", "olaf", "carolina panthers",
-        "delilah", "good luck charlie", "sven", "paddington", "chinchillas", "exploding kittens", "christmas",
-        "cheetos", "love you", "ice cream", "snowman", "pool table", "thats cool", "meatloaf", "hot chocolate"
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,30 +33,27 @@ class MainActivity : AppCompatActivity() {
 
         binding.newGameButton.visibility = View.GONE
 
-        var randomNumber = Random.nextInt(0, listOfWords.size)
-        if (randomNumber in randomNumberList) {
-            randomNumber = Random.nextInt(0, listOfWords.size)
+        if (savedInstanceState == null) {
+            viewModel.getWord(false)
+            viewModel.setupGame()
         }
-        randomNumberList.add(randomNumber)
 
-        theWord = listOfWords[randomNumber]
-        theWord.forEach {
-            if (it.toString() == (" ")) {
-                underscores.add(" ")
-            } else {
-                underscores.add("_")
+        viewModel.getWord(true)
+        binding.lettersGuessed.text = viewModel.listOfGuessedLetters.joinToString(" ")
+        binding.wordTV.text = viewModel.underscores.joinToString(" ")
+
+       clearBodyPartViews()
+
+        if(viewModel.numOfGuesses > 0){
+            var cycleThrough = 0
+            while (cycleThrough < viewModel.numOfGuesses){
+                listOfParts[cycleThrough].visibility = View.VISIBLE
+                cycleThrough++
             }
         }
 
-        binding.wordTV.text = underscores.joinToString(" ")
-
-        while (bodyPartIndex < listOfParts.size) {
-            listOfParts[bodyPartIndex].visibility = View.GONE
-            bodyPartIndex++
-        }
-
         binding.newGameButton.setOnClickListener {
-            newGame()
+             newGame()
         }
 
         binding.guessButton.setOnClickListener {
@@ -77,98 +62,68 @@ class MainActivity : AppCompatActivity() {
                 binding.letterInput.text.clear()
             } else {
                 theLetter = binding.letterInput.text.toString()
-                lettersGuess(theWord.toCharArray(), theLetter)
+                lettersGuess(viewModel.theWord.toCharArray(), theLetter)
             }
 
         }
     }
 
-    fun lettersGuess(theWord: CharArray, theGuess: String) {
-        var guessedCorrectly = false
-        if (theGuess in listofGuessedLetters || theGuess in lineTwoGuessedLetters) {
-            Toast.makeText(this, "Already guessed letter", Toast.LENGTH_SHORT).show()
-            binding.letterInput.text.clear()
-        } else {
-            theWord.forEachIndexed { index, char ->
-                if (theGuess == char.toString()) {
-                    underscores[index] = char.toString()
-                    binding.wordTV.text = underscores.joinToString(" ")
-                    guessedCorrectly = true
-                }
-            }
-
-            if (!guessedCorrectly) {
-                listOfParts[numOfGuesses].visibility = View.VISIBLE
-                numOfGuesses++
-
-                if (numOfGuesses == listOfParts.size) {
-                    binding.resultsView.text = this.getString(R.string.you_lost)
-                    hideKeyboardFrom(this, binding.root)
-                    binding.wordTV.text = theWord.joinToString(" ")
-                    binding.newGameButton.visibility = View.VISIBLE
-                }
-            }
-
-            if (!underscores.contains("_")) {
-                gameEndedOrNot(true)
-            } else {
-                gameEndedOrNot(false)
-            }
-            if (listofGuessedLetters.size == 8) {
-                lineTwoGuessedLetters.add(theGuess)
-                binding.lettersGuessedLine2.text = lineTwoGuessedLetters.joinToString(" ")
-                binding.letterInput.text.clear()
-            } else {
-                listofGuessedLetters.add(theGuess)
-                binding.lettersGuessed.text = listofGuessedLetters.joinToString(" ")
+    private fun lettersGuess(theWord: CharArray, theGuess: String) {
+        val guessResult: GameViewModel.GuessResult = viewModel.letterGuess(theGuess)
+        val gameEndedOrNot = viewModel.isGameEnded()
+        when (guessResult) {
+            GameViewModel.GuessResult.ALREADY_GUESSED -> {
+                Toast.makeText(this, "Already guessed letter", Toast.LENGTH_SHORT).show()
                 binding.letterInput.text.clear()
             }
-        }
+            GameViewModel.GuessResult.INCORRECT -> {
+                listOfParts[viewModel.numOfGuesses -1].visibility = View.VISIBLE
+                binding.lettersGuessed.text = viewModel.listOfGuessedLetters.joinToString(" ")
+            }
+            GameViewModel.GuessResult.CORRECT -> {
+                binding.lettersGuessed.text = viewModel.listOfGuessedLetters.joinToString(" ")
+                binding.wordTV.text = viewModel.underscores.joinToString(" ")
+                binding.letterInput.text.clear()
 
+            }
+        }
+        when (gameEndedOrNot) {
+            GameViewModel.GameResult.LOST -> {
+                binding.resultsView.text = this.getString(R.string.you_lost)
+                hideKeyboardFrom(this, binding.root)
+                binding.wordTV.text = theWord.joinToString(" ")
+                binding.newGameButton.visibility = View.VISIBLE
+            }
+            GameViewModel.GameResult.WON -> {
+                binding.resultsView.text = this.getString(R.string.you_won)
+                binding.newGameButton.visibility = View.VISIBLE
+                hideKeyboardFrom(this, binding.root)
+            }
+            GameViewModel.GameResult.STILL_PLAYING -> binding.letterInput.text.clear()
+        }
     }
 
-    private fun gameEndedOrNot(ended: Boolean) {
-        if (ended) {
-            binding.resultsView.text = this.getString(R.string.you_won)
-            binding.newGameButton.visibility = View.VISIBLE
-            hideKeyboardFrom(this, binding.root)
-        }
-    }
-
-    private fun newGame() {
-        bodyPartIndex = 0
-        numOfGuesses = 0
+    private fun clearBodyPartViews(){
         while (bodyPartIndex < listOfParts.size) {
             listOfParts[bodyPartIndex].visibility = View.GONE
             bodyPartIndex++
         }
-
-        var randomNumber = Random.nextInt(0, listOfWords.size)
-        randomNumberList.add(randomNumber)
-        if (randomNumber in randomNumberList) {
-            randomNumber = Random.nextInt(0, listOfWords.size)
-
-        }
-        theWord = listOfWords[randomNumber]
-        underscores.clear()
-        theWord.forEach {
-            if (it.toString() == (" ")) {
-                underscores.add(" ")
-            } else {
-                underscores.add("_")
-            }
-
-            binding.wordTV.text = underscores.joinToString(" ")
-            listofGuessedLetters.clear()
-            lineTwoGuessedLetters.clear()
-            binding.lettersGuessed.text = ""
-            binding.lettersGuessedLine2.text = ""
-            binding.resultsView.text = ""
-            binding.newGameButton.visibility = View.GONE
-        }
     }
 
-    fun hideKeyboardFrom(context: Context, view: View) {
+    private fun newGame() {
+        viewModel.newGame()
+        binding.lettersGuessed.text = ""
+        binding.resultsView.text = ""
+        binding.newGameButton.visibility = View.GONE
+        binding.letterInput.text.clear()
+        binding.wordTV.text = viewModel.underscores.joinToString(" ")
+        bodyPartIndex = 0
+
+        clearBodyPartViews()
+
+    }
+
+    private fun hideKeyboardFrom(context: Context, view: View) {
         val imm = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
